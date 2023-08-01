@@ -1,0 +1,27 @@
+#!/bin/bash
+#SBATCH --job-name="envinfo"
+#SBATCH --output="envinfo.%j.%N.out"
+#SBATCH --partition=shared
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --mem=8G
+#SBATCH --constraint="lustre"
+#SBATCH --export=ALL
+#SBATCH --account=was138
+#SBATCH -t 40:00:00
+
+#  Environment
+module purge
+module load slurm
+module load cpu
+
+
+#   perform some basic unix commands
+
+echo "----------------------------------"
+echo "hostname= " `hostname`
+echo "date= " `date`
+echo "whoami= " `whoami`
+echo "pwd= " `pwd`
+
+bash /path/automated_lftp_download.sh
