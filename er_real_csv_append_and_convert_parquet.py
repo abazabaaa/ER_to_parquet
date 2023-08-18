@@ -18,7 +18,7 @@ output_dir = sys.argv[2]
 def open_csv_stream(csv_file):
 
     chunksize = 1048576*100
-    include_columns = ['smiles', 'idnumber', 'sLogP', 'MW', 'HAC', 'HBA', 'HBD', 'RotBonds', 'FSP3', 'TPSA']
+    include_columns = ['smiles', 'id', 'MW', 'HAC', 'sLogP', 'HBA', 'HBD', 'RotBonds', 'FSP3', 'TPSA']
     read_options = csv.ReadOptions(block_size=chunksize)
     parse_options = csv.ParseOptions(delimiter='\t')
     convert_options = csv.ConvertOptions(include_columns=include_columns)
@@ -27,7 +27,6 @@ def open_csv_stream(csv_file):
         read_options=read_options,
         parse_options=parse_options,
         convert_options=convert_options)
-
     return csv_stream
 
 def chunk_to_df_add_descriptors(chunk):
@@ -53,7 +52,6 @@ def get_arrowtable_from_df(df):
     table = pa.Table.from_pandas(df, preserve_index=False)
 
     return table
-
 def write_table_out(table, count, output_dir, csv_file_path):
 
     file_path = pathlib.Path(csv_file_path)
@@ -73,8 +71,6 @@ def clean_compound_names(name):
     except:
         pass
         return name
-
-
 csv_stream = open_csv_stream(csv_file_path)
 
 chunk = csv_stream.read_next_batch()
