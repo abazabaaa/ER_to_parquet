@@ -1,0 +1,38 @@
+#!/bin/bash
+#SBATCH --job-name="envinfo"
+#SBATCH --output="envinfo.%j.%N.out"
+#SBATCH --partition=shared
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=4
+#SBATCH --mem=32G
+#SBATCH --constraint="lustre"
+#SBATCH --export=ALL
+#SBATCH --account=was138
+#SBATCH -t 40:00:00
+
+#  Environment
+module purge
+module load slurm
+module load cpu/0.15.4 gcc/10.2.0
+module load anaconda3/2020.11
+echo "Checking conda location..."
+which conda
+
+. $ANACONDA3HOME/etc/profile.d/conda.sh
+conda deactivate
+conda activate ERparq
+
+#   perform some basic unix commands tom2
+
+echo "----------------------------------"
+echo "hostname= " `hostname`
+echo "date= " `date`
+echo "whoami= " `whoami`
+echo "pwd= " `pwd`
+
+echo "Checking python interpreter..."
+which python
+
+echo "Getting python enviroment details..."
+env | grep PYTHON
+
