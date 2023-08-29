@@ -2,6 +2,10 @@
 
 [[[Setting up Conda environment]]]
 
+All environment parameters for first step are in:
+	ERparq.txt (explicit lists)
+OR	ERparq.yml (shorthand list)
+
 After logging into Expanse, you need to switch to the debug node to set up a conda environment (for later steps)
 
 $srun --partition=debug  --pty --account=was138 --nodes=1 --ntasks-per-node=4 \
@@ -17,6 +21,8 @@ You can then create an environment as normal (for my first step I named mine ‘
 Use ‘pip install’ to load Pyarrow, Pandas, and RDKit
 
 **sometimes this node will close if environment setup takes too long, you can either try again or skip the srun part and try setting things up on the initial login headnode
+
+
 
 ------------------------------------------------------------------------------------------------------
 
@@ -87,4 +93,22 @@ update lines 14 and 15 to reflect list of parquet files (parquet_files.txt) and 
 	#prints files missing in second file compared to first 
 	#SECOND_FILE= converted.txt
 	#FIRST_FILE=input_files.txt
-**If the OUTPUT_FILE is blank, delete a line from SECOND_FILE and re-run, the OUTPUT_FILE should have that name in it now. Otherwise there is a problem and take time to resolve this before moving on. 
+**If the OUTPUT_FILE is blank, delete a line from SECOND_FILE and re-run, the OUTPUT_FILE should have that name in it now. Otherwise there is a problem and take time to resolve this before moving on.
+
+----------------------------------------------------------------------------------------------------
+
+[[[Parquet to SMILES]]]
+
+First, create a new conda environment ('duckdb') and install 1)pyarrow, 2) duckdb, and 3) pandas.
+
+Before converting parquet files to SMILES, it is best to know how many molecules are contained in the parquet files. 
+Update count_parquet_template.py to reflect the path to your parquet database, then submit the job using count_lines_parquet.sb
+The number of files will be printed in the *.out file* specified in count_lines_parquet.sb 
+
+Another step of pre-filtering can be done using properties_histogram_calc_template.py and properties_histogram_calc.sb on a handful of parquet files.In properties_histogram_calc_template.py, update line 6 to reflect <PATH> and line 44 to a unique output file name. This will help give an idea of the properties landscape/cutoff values you wish to use in the next step. 
+
+Finally, convert all the parquet files to SMILE using query_dataset_create_smi.py and query_dataset_create_smi_submit_template.sb
+Be careful to verify header names on parquet files match the selection criteria specified on line 28 of query_dataset_create_smi.py
+
+Once the job is finished, ensure all files have been converted (using $ls -1 | wc -l  while inside the SMILES output directory, then multiply by 40,000 since that is the number of molecules in each chunk. The number should closely reflect the number of lines found in parquet files, determined uing count_parquet_template.py (above)    
+ 
