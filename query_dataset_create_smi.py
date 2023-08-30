@@ -5,9 +5,11 @@ import pyarrow.parquet as pq
 import pandas as pd
 from pyarrow import csv
 
-parquet_database = "/expanse/lustre/scratch/tjagraham/temp_project/enamine_real_5B/er_real_pq_database"
 
-parquet_database_q_out = "/expanse/lustre/scratch/tjagraham/temp_project/enamine_real_5B/rna_bp_library"
+parquet_database = "/expanse/lustre/scratch/millers7/temp_project/chem_space_parquet"
+
+parquet_database_q_out = "/expanse/lustre/scratch/millers7/temp_project/Enamine_classic_parameters_library"
+
 
 smiles_dataset = ds.dataset(parquet_database, format="parquet")
 
@@ -24,9 +26,7 @@ num = 3
 
 
 con.execute('PRAGMA threads=8')
-query = con.execute(
-        f"SELECT smiles, idnumber FROM smiles_dataset WHERE num_aromatic_ring >= '{num}' AND HBD > 0 AND HBA > 0 AND MW <= 400 AND MW >= 275 AND sLogP <= 4 and HAC >= 14 and HAC <= 30"
-    )
+query = con.execute(f"SELECT smiles, id FROM smiles_dataset WHERE num_aromatic_ring >= '{num}' AND HBD > 0 AND HBA > 0 AND MW <= 400 AND MW >= 275 AND sLogP >= 1.5 and HAC >= 14 and HAC <= 30")
 record_batch_reader = query.fetch_record_batch()
 
 #print(type(record_batch_reader))
